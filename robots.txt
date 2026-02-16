@@ -1,0 +1,11 @@
+# Robots.txt for Advantage Court Maintenance
+# https://www.advantagecourtmaintenance.co.uk
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://www.advantagecourtmaintenance.co.uk/sitemap.xml
+
+# Crawl-delay (optional, be nice to servers)
+Crawl-delay: 1
