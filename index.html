@@ -13,7 +13,8 @@
     <title>Tennis Court Maintenance & Resurfacing, Lincolnshire & UK | Advantage Court Maintenance</title>
     <meta name="title" content="Tennis Court Maintenance & Resurfacing, Lincolnshire & UK | Advantage Court Maintenance">
     <meta name="description" content="Tennis court maintenance, resurfacing, repairs and new builds. Lincolnshire specialists covering the whole UK since 1989. Free quotes — call 07771 884762.">
-    <meta name="robots" content="index, follow">
+    <!-- DEV MODE: noindex while the PIN gate is up. AT LAUNCH: remove the PIN overlay (html/css/js) AND change this back to "index, follow" -->
+    <meta name="robots" content="noindex, nofollow">
     <meta name="author" content="Advantage Court Maintenance">
 
     <!-- Canonical URL - UPDATE THIS when domain is chosen -->
@@ -1079,6 +1080,59 @@
             transform: translateY(0);
         }
 
+        /* Password Protection (DEV ONLY — remove at launch) */
+        .password-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--cream);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .password-overlay.hidden {
+            display: none;
+        }
+
+        .password-box {
+            text-align: center;
+            padding: var(--space-lg);
+            background: var(--white-line);
+            border-radius: 12px;
+            box-shadow: 0 4px 40px rgba(0, 0, 0, 0.08);
+            max-width: 320px;
+            width: 90%;
+        }
+
+        .pin-input {
+            width: 140px;
+            padding: 1rem;
+            font-family: var(--font-body);
+            font-size: 1.5rem;
+            text-align: center;
+            letter-spacing: 0.5rem;
+            border: 2px solid var(--cream-dark);
+            border-radius: 8px;
+            background: var(--cream);
+            transition: border-color 0.2s ease;
+        }
+
+        .pin-input:focus {
+            outline: none;
+            border-color: var(--court-green);
+        }
+
+        .pin-error {
+            color: #c0392b;
+            font-size: 0.85rem;
+            margin-top: var(--space-sm);
+            min-height: 1.2em;
+        }
+
         /* Areas We Cover */
         .areas {
             padding: var(--space-xl) 0;
@@ -1351,6 +1405,18 @@
     </style>
 </head>
 <body>
+    <!-- Password Protection Overlay (DEV ONLY — remove at launch) -->
+    <div id="passwordOverlay" class="password-overlay">
+        <div class="password-box">
+            <div class="logo-icon" style="margin: 0 auto var(--space-md);"></div>
+            <p style="font-family: var(--font-display); font-size: 1.5rem; margin-bottom: var(--space-xs);">Advantage</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: var(--space-md);">Court Maintenance</p>
+            <label for="pinInput" style="font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: var(--space-xs);">Enter PIN to continue</label>
+            <input type="password" id="pinInput" maxlength="4" placeholder="****" class="pin-input" autofocus>
+            <p id="pinError" class="pin-error"></p>
+        </div>
+    </div>
+
     <!-- Header -->
     <header>
         <div class="container">
@@ -1788,6 +1854,30 @@
     </footer>
 
     <script>
+        // Password protection (DEV ONLY — remove at launch)
+        const PIN = '1122';
+        const pinInput = document.getElementById('pinInput');
+        const pinError = document.getElementById('pinError');
+        const overlay = document.getElementById('passwordOverlay');
+
+        // Check if already authenticated this session
+        if (sessionStorage.getItem('authenticated') === 'true') {
+            overlay.classList.add('hidden');
+        }
+
+        pinInput.addEventListener('input', function() {
+            pinError.textContent = '';
+            if (this.value.length === 4) {
+                if (this.value === PIN) {
+                    sessionStorage.setItem('authenticated', 'true');
+                    overlay.classList.add('hidden');
+                } else {
+                    pinError.textContent = 'Incorrect PIN';
+                    this.value = '';
+                }
+            }
+        });
+
         // Mobile menu toggle
         function toggleMenu() {
             document.getElementById('nav').classList.toggle('active');
